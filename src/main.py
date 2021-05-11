@@ -26,8 +26,8 @@ isOneTimeSetupComplete = True
 state_identifier = "mat-option-36"
 district_identifier = "mat-option-53"
 check_in_x_seconds = 20
-your_phone_number = "9830212422"
-
+your_phone_number = int(input("Your Number: "))
+your_phone_number = str(your_phone_number)
 userState = input("Your State: ").lower()
 userDistrict = input("Your District: ").lower()
 
@@ -129,7 +129,7 @@ options.add_argument(f"--user-data-dir={scriptDirectory}\\cd")
 # options.add_argument("--profile-directory=Default")
 # options.add_argument(r'--profile-directory="1"')
 driver = webdriver.Chrome(r"./dependencies/chromedriver.exe", options=options)
-driver.maximize_window
+driver.maximize_window()
 driver.get(r'https://www.cowin.gov.in/')
 driver.execute_script("window.open('" + "https://messages.google.com/web/authentication" + "', '_blank')")
 sleep(1)
@@ -138,11 +138,16 @@ sleep(1)
 
 def OpenMessages():
     driver.switch_to.window(driver.window_handles[2])
-    print("\n>> Waiting for authentication from Google Messages")
-    while(driver.current_url != r"https://messages.google.com/web/conversations"):
-        print(">> Waiting for authentication from Google Messages (Retrying..)")
-        sleep(10)
+    # print("\n>> Waiting for authentication from Google Messages")
+    sleep(2)
+    if driver.current_url == "https://messages.google.com/web/authentication":
+        toggle = WebDriverWait(driver, 30).until(ec.presence_of_element_located((By.CLASS_NAME, "mat-slide-toggle-thumb")))
+        toggle.click()
 
+    while(driver.current_url != r"https://messages.google.com/web/conversations"):
+        # print(">> Waiting for authentication from Google Messages (Retrying..)")
+        # sleep(10)
+        pass
     return
 
 def GetOTP():
