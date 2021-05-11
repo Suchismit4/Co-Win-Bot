@@ -7,7 +7,7 @@ from selenium.webdriver.support import expected_conditions as ec
 from time import sleep, time
 from pathlib import Path
 from playsound import playsound
-
+import os
 
 class bcolors:
     HEADER = '\033[95m'
@@ -17,6 +17,7 @@ class bcolors:
     WARNING = '\033[93m'
     FAIL = '\033[91m'
     ENDC = '\033[0m'
+    
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
@@ -25,52 +26,60 @@ isOneTimeSetupComplete = True
 state_identifier = "mat-option-36"
 district_identifier = "mat-option-53"
 check_in_x_seconds = 20
-your_phone_number = "9007476911"
+your_phone_number = "9830212422"
+
+userState = input("Your State: ").lower()
+userDistrict = input("Your District: ").lower()
 
 def setup():
     print("Warning: Application is still in beta, if any errors occur report in github page")
-    file_settings = Path("settings.txt")
+    # file_settings = Path("settings.txt")
     if not isOneTimeSetupComplete:
         print("Error: Application not setup correctly!")
         quit()
-    if file_settings.is_file():
+    if os.path.exists("./settings.txt"):
         with open('settings.txt', 'r') as file:
             email = file.readlines()
-            return email
     else:
         print("\nWelcome, this application is only for educational purposes and should not be misused to hamper the services of Co-Win website.\nFurther more, I am not responsible for any problem if to occur on your behalf of running this application!\n\n")
-
         email = input("\nPlease type your e-mail:  ")
         with open('settings.txt', 'w') as file:
             file.write(email)
-            print("Restart the application!")
-            quit()
-            return email
-
-    return
+    
+    return email
 
 def select_state(driver):
     wait = WebDriverWait(driver, 10)
-    wait.until(ec.visibility_of_element_located((By.ID, "mat-select-0")))
+    wait.until(ec.presence_of_element_located((By.ID, "mat-select-0")))
     driver.find_element_by_id('mat-select-0').click()
-    state = wait.until(ec.visibility_of_element_located((By.XPATH, f"//mat-option[@id='{state_identifier}']")))
-    state.click()
-
+    # state = wait.until(ec.presence_of_element_located((By.XPATH, f"//mat-option[@id='{state_identifier}']")))
+    # state.click()
+    wait.until(ec.presence_of_element_located((By.ID, "cdk-overlay-0")))
+    stateList = driver.find_elements_by_xpath("//div[@id='cdk-overlay-0']/div/div/mat-option/span")
+    for state in stateList:
+        if state.text.lower() == userState.lower():
+            state.click()
+            break
     return
 
 def select_district(driver):
     wait = WebDriverWait(driver, 10)
-    wait.until(ec.visibility_of_element_located((By.ID, "mat-select-2")))
+    wait.until(ec.presence_of_element_located((By.ID, "mat-select-2")))
     driver.find_element_by_id('mat-select-2').click()
-    district = wait.until(ec.visibility_of_element_located((By.XPATH, f"//mat-option[@id='{district_identifier}']")))
-    district.click()
-
+    # district = wait.until(ec.presence_of_element_located((By.XPATH, f"//mat-option[@id='{district_identifier}']")))
+    # district.click()
+    wait.until(ec.presence_of_element_located((By.ID, "cdk-overlay-1")))
+    districtList = driver.find_elements_by_xpath("//div[@id='cdk-overlay-1']/div/div/mat-option/span")
+    for district in districtList:
+        if district.text.lower() == userDistrict.lower():
+            district.click()
+            break
     return
 
 def find_vaccines(driver):
     wait = WebDriverWait(driver, 20)
     query = "//div[contains(@class, 'mat-main-field') and contains(@class, 'center-main-field')]/mat-selection-list/div[contains(@class, 'ng-star-inserted')]"
-    vaccine_rows = wait.until(ec.visibility_of_all_elements_located((By.XPATH, query)))
+    vaccine_rows = wait.until(ec.presence_of_all_elements_located((By.XPATH, query)))
     all_vaccine_info = []
     for i in range(len(vaccine_rows)):
         vaccine_center = driver.find_elements_by_xpath(query)[i]
@@ -115,7 +124,9 @@ vaccine_found = False
 
 options = webdriver.ChromeOptions()
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
-options.add_argument(r"--user-data-dir=/Chrome_Data")
+# options.add_argument("--user-data-dir=C:/users/Documents/CoWinBot")
+options.add_argument("--profile-directory=Default")
+# options.add_argument(r'--profile-directory="1"')
 driver = webdriver.Chrome(r"./dependencies/chromedriver.exe", options=options)
 driver.maximize_window
 driver.get(r'https://www.cowin.gov.in/')
@@ -138,16 +149,16 @@ def GetOTP():
     driver.get('https://messages.google.com/web/conversations')
     sleep(15)
     wait = WebDriverWait(driver, 30)
-    wait.until(ec.visibility_of_all_elements_located((By.TAG_NAME, r"mws-conversation-list-item")))
+    wait.until(ec.presence_of_all_elements_located((By.TAG_NAME, r"mws-conversation-list-item")))
     msg_container = driver.find_elements_by_tag_name(r"mws-conversation-list-item")[0]
     msg_container.find_element_by_tag_name("a").click()
     query = "//div[contains(@class, 'text-msg') and contains(@class, 'ng-star-inserted')]"
     print(">> Found OTP!")
     driver.get('https://messages.google.com/web/conversations')
-    wait.until(ec.visibility_of_all_elements_located((By.TAG_NAME, r"mws-conversation-list-item")))
+    wait.until(ec.presence_of_all_elements_located((By.TAG_NAME, r"mws-conversation-list-item")))
     msg_container = driver.find_elements_by_tag_name(r"mws-conversation-list-item")[0]
     msg_container.find_element_by_tag_name("a").click()
-    wait.until(ec.visibility_of_all_elements_located((By.XPATH, query)))
+    wait.until(ec.presence_of_all_elements_located((By.XPATH, query)))
     all_msg_txt = driver.find_elements_by_xpath(query)
 
     unfiltered_OTP = all_msg_txt[len(all_msg_txt)-1].text
@@ -164,15 +175,15 @@ def SendOTP():
     driver.get('https://selfregistration.cowin.gov.in/')
     sleep(3)
     wait = WebDriverWait(driver, 20)
-    wait.until(ec.visibility_of_element_located((By.ID, "mat-input-0")))
+    wait.until(ec.presence_of_element_located((By.ID, "mat-input-0")))
     box = driver.find_element_by_id("mat-input-0")
     for n in your_phone_number:
         box.send_keys(n)
         sleep(.3)
-    wait.until(ec.visibility_of_element_located((By.TAG_NAME, "ion-button")))
+    wait.until(ec.presence_of_element_located((By.TAG_NAME, "ion-button")))
     button = driver.find_element_by_tag_name("ion-button")
     button.click()
-    wait.until(ec.visibility_of_element_located((By.ID, "mat-input-1")))
+    wait.until(ec.presence_of_element_located((By.ID, "mat-input-1")))
     sleep(10)
     print(">> Waiting for OTP")
 
@@ -183,13 +194,13 @@ def TryPuttinOTP(OTP):
     driver.switch_to.window(driver.window_handles[1])
     sleep(3)
     wait = WebDriverWait(driver, 30)
-    wait.until(ec.visibility_of_element_located((By.ID, "mat-input-1")))
+    wait.until(ec.presence_of_element_located((By.ID, "mat-input-1")))
     box = driver.find_element_by_id("mat-input-1")
     for char in OTP:
         box.send_keys(char)
         sleep(.6)
     sleep(1)
-    wait.until(ec.visibility_of_element_located((By.TAG_NAME, "ion-button")))
+    wait.until(ec.presence_of_element_located((By.TAG_NAME, "ion-button")))
     button = driver.find_element_by_tag_name("ion-button")
     button.click()
     sleep(5)
@@ -211,7 +222,7 @@ def GoBackToMainPage():
     return
 
 def Logout():
-    wait.until(ec.visibility_of_element_located((By.XPATH, "//ul[contains(@class, 'navigation') and contains(@class, 'logout-text')]")))
+    wait.until(ec.presence_of_element_located((By.XPATH, "//ul[contains(@class, 'navigation') and contains(@class, 'logout-text')]")))
     driver.find_element_by_xpath("//ul[contains(@class, 'navigation') and contains(@class, 'logout-text')]/li").click()
     driver.get('https://messages.google.com/web/authentication')
     return
@@ -234,10 +245,10 @@ while(vaccine_found == False):
     wait = WebDriverWait(driver, 30)
     print("\n>> Fetching fresh set of slots:")
     counting_entries+=1
-    wait.until(ec.visibility_of_element_located((By.CLASS_NAME, "btnlist")))
+    wait.until(ec.presence_of_element_located((By.CLASS_NAME, "btnlist")))
     button_appointment_schedule = driver.find_element_by_class_name("btnlist").find_element_by_xpath("//li/a")
     button_appointment_schedule.click()
-    wait.until(ec.visibility_of_element_located((By.CLASS_NAME, "register-btn")))
+    wait.until(ec.presence_of_element_located((By.CLASS_NAME, "register-btn")))
     button_appointment_schedule = driver.find_element_by_class_name("register-btn")
     button_appointment_schedule.click()
     SwitchToDistrict()
@@ -245,7 +256,7 @@ while(vaccine_found == False):
     sleep(.5)
     select_district(driver)
     driver.find_elements_by_tag_name("ion-button")[1].click()
-    wait.until(ec.visibility_of_all_elements_located((By.CLASS_NAME, "form-check")))
+    wait.until(ec.presence_of_all_elements_located((By.CLASS_NAME, "form-check")))
     sleep(1)
     driver.find_elements_by_class_name("form-check")[0].click()
     vaccine_info = find_vaccines(driver)
