@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as ec
-from time import sleep
+from time import sleep, time
 from pathlib import Path
 from playsound import playsound
 
@@ -25,7 +25,7 @@ isOneTimeSetupComplete = True
 state_identifier = "mat-option-36"
 district_identifier = "mat-option-53"
 check_in_x_seconds = 20
-
+your_phone_number = "9007476911"
 
 def setup():
     print("Warning: Application is still in beta, if any errors occur report in github page")
@@ -115,30 +115,41 @@ vaccine_found = False
 
 options = webdriver.ChromeOptions()
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
-options.add_argument(r"--user-data-dir=C:\Users\HP\PycharmProjects\pythonProject")
+options.add_argument(r"--user-data-dir=/Chrome_Data")
 driver = webdriver.Chrome(r"./dependencies/chromedriver.exe", options=options)
 driver.maximize_window
 driver.get(r'https://www.cowin.gov.in/')
 driver.execute_script("window.open('" + "https://messages.google.com/web/authentication" + "', '_blank')")
 sleep(1)
 driver.execute_script("window.open('" + "https://selfregistration.cowin.gov.in/" + "', '_blank')")
-sleep(5)
+sleep(1)
 
 def OpenMessages():
     driver.switch_to.window(driver.window_handles[2])
     print("\n>> Waiting for authentication from Google Messages")
-    sleep(20)
-    if(driver.current_url == r"https://messages.google.com/web/conversations"):
-        print("\b>> Logged in Google Messages")
+    while(driver.current_url != r"https://messages.google.com/web/conversations"):
+        print(">> Waiting for authentication from Google Messages (Retrying..)")
+        sleep(10)
 
     return
 
 def GetOTP():
     driver.switch_to.window(driver.window_handles[2])
-    driver.get('https://messages.google.com/web/conversations/1')
-    wait = WebDriverWait(driver, 20)
+    driver.get('https://messages.google.com/web/conversations')
+    sleep(15)
+    wait = WebDriverWait(driver, 30)
+    wait.until(ec.visibility_of_all_elements_located((By.TAG_NAME, r"mws-conversation-list-item")))
+    msg_container = driver.find_elements_by_tag_name(r"mws-conversation-list-item")[0]
+    msg_container.find_element_by_tag_name("a").click()
     query = "//div[contains(@class, 'text-msg') and contains(@class, 'ng-star-inserted')]"
-    all_msg_txt = wait.until(ec.visibility_of_all_elements_located((By.XPATH, query)))
+    print(">> Found OTP!")
+    driver.get('https://messages.google.com/web/conversations')
+    wait.until(ec.visibility_of_all_elements_located((By.TAG_NAME, r"mws-conversation-list-item")))
+    msg_container = driver.find_elements_by_tag_name(r"mws-conversation-list-item")[0]
+    msg_container.find_element_by_tag_name("a").click()
+    wait.until(ec.visibility_of_all_elements_located((By.XPATH, query)))
+    all_msg_txt = driver.find_elements_by_xpath(query)
+
     unfiltered_OTP = all_msg_txt[len(all_msg_txt)-1].text
     OTP = []
     for word in unfiltered_OTP:
@@ -150,14 +161,19 @@ def GetOTP():
 
 def SendOTP():
     driver.switch_to.window(driver.window_handles[1])
+    driver.get('https://selfregistration.cowin.gov.in/')
     sleep(3)
     wait = WebDriverWait(driver, 20)
     wait.until(ec.visibility_of_element_located((By.ID, "mat-input-0")))
     box = driver.find_element_by_id("mat-input-0")
-    box.send_keys("9007476911")
+    for n in your_phone_number:
+        box.send_keys(n)
+        sleep(.3)
     wait.until(ec.visibility_of_element_located((By.TAG_NAME, "ion-button")))
     button = driver.find_element_by_tag_name("ion-button")
     button.click()
+    wait.until(ec.visibility_of_element_located((By.ID, "mat-input-1")))
+    sleep(10)
     print(">> Waiting for OTP")
 
     return
@@ -202,8 +218,8 @@ def Logout():
 
 def Login():
     OpenMessages()
+    driver.switch_to.window(driver.window_handles[2])
     SendOTP()
-    sleep(15)
     OTP = GetOTP()
     TryPuttinOTP(OTP)
     sleep(1)
@@ -212,10 +228,10 @@ counting_entries = 1;
 
 while(vaccine_found == False):
     if driver.current_url != "https://selfregistration.cowin.gov.in/dashboard":
-        print(">> User is logged out!    Trying to log back in 30 seconds...")
+        print(">> User is logged out!    Trying to log back in 10 seconds...")
         sleep(10)
         Login()
-    wait = WebDriverWait(driver, 20)
+    wait = WebDriverWait(driver, 30)
     print("\n>> Fetching fresh set of slots:")
     counting_entries+=1
     wait.until(ec.visibility_of_element_located((By.CLASS_NAME, "btnlist")))
