@@ -25,6 +25,7 @@ isOneTimeSetupComplete = True
 state_identifier = "mat-option-36"
 district_identifier = "mat-option-53"
 check_in_x_seconds = 20
+your_phone_no = ""
 
 
 def setup():
@@ -154,7 +155,7 @@ def SendOTP():
     wait = WebDriverWait(driver, 20)
     wait.until(ec.visibility_of_element_located((By.ID, "mat-input-0")))
     box = driver.find_element_by_id("mat-input-0")
-    box.send_keys("9007476911")
+    box.send_keys(your_phone_no)
     wait.until(ec.visibility_of_element_located((By.TAG_NAME, "ion-button")))
     button = driver.find_element_by_tag_name("ion-button")
     button.click()
