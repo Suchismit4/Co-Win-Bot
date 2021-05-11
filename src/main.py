@@ -124,8 +124,9 @@ vaccine_found = False
 
 options = webdriver.ChromeOptions()
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
-# options.add_argument("--user-data-dir=C:/users/Documents/CoWinBot")
-options.add_argument("--profile-directory=Default")
+scriptDirectory = Path().absolute()
+options.add_argument(f"--user-data-dir={scriptDirectory}\\cd")
+# options.add_argument("--profile-directory=Default")
 # options.add_argument(r'--profile-directory="1"')
 driver = webdriver.Chrome(r"./dependencies/chromedriver.exe", options=options)
 driver.maximize_window
