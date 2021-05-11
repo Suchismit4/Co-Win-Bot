@@ -25,8 +25,15 @@ isOneTimeSetupComplete = True
 state_identifier = "mat-option-36"
 district_identifier = "mat-option-53"
 check_in_x_seconds = 20
+<<<<<<< Updated upstream
 your_phone_no = ""
 
+=======
+your_phone_number = int(input("Your Number: "))
+your_phone_number = str(your_phone_number)
+userState = input("Your State: ").lower()
+userDistrict = input("Your District: ").lower()
+>>>>>>> Stashed changes
 
 def setup():
     print("Warning: Application is still in beta, if any errors occur report in github page")
@@ -127,11 +134,23 @@ sleep(5)
 
 def OpenMessages():
     driver.switch_to.window(driver.window_handles[2])
+    sleep(2)
+    if driver.current_url == "https://messages.google.com/web/authentication":
+        toggle = WebDriverWait(driver, 30).until(ec.presence_of_element_located((By.CLASS_NAME, "mat-slide-toggle-thumb")))
+        toggle.click()
+
     print("\n>> Waiting for authentication from Google Messages")
+<<<<<<< Updated upstream
     sleep(20)
     if(driver.current_url == r"https://messages.google.com/web/conversations"):
         print("\b>> Logged in Google Messages")
+=======
+>>>>>>> Stashed changes
 
+    while(driver.current_url != r"https://messages.google.com/web/conversations"):
+        # print(">> Waiting for authentication from Google Messages (Retrying..)")
+        # sleep(10)
+        pass
     return
 
 def GetOTP():
@@ -203,6 +222,10 @@ def Logout():
 
 def Login():
     OpenMessages()
+<<<<<<< Updated upstream
+=======
+    # driver.switch_to.window(driver.window_handles[2])
+>>>>>>> Stashed changes
     SendOTP()
     sleep(15)
     OTP = GetOTP()
