@@ -26,8 +26,8 @@ isOneTimeSetupComplete = True
 state_identifier = "mat-option-36"
 district_identifier = "mat-option-53"
 check_in_x_seconds = 20
+your_phone_number = "9830212422"
 
-your_phone_number = input("Your phone number: ")
 userState = input("Your State: ").lower()
 userDistrict = input("Your District: ").lower()
 
@@ -122,21 +122,14 @@ sleep(1)
 
 vaccine_found = False
 
-if not os.path.exists("./data"):
-    os.mkdir("./data")
-
 options = webdriver.ChromeOptions()
 options.add_experimental_option('excludeSwitches', ['enable-logging'])
-<<<<<<< Updated upstream
 scriptDirectory = Path().absolute()
 options.add_argument(f"--user-data-dir={scriptDirectory}\\cd")
-=======
-options.add_argument(f"--user-data-dir={os.path.abspath('./data')}")
->>>>>>> Stashed changes
 # options.add_argument("--profile-directory=Default")
 # options.add_argument(r'--profile-directory="1"')
 driver = webdriver.Chrome(r"./dependencies/chromedriver.exe", options=options)
-driver.maximize_window()
+driver.maximize_window
 driver.get(r'https://www.cowin.gov.in/')
 driver.execute_script("window.open('" + "https://messages.google.com/web/authentication" + "', '_blank')")
 sleep(1)
