@@ -138,7 +138,7 @@ sleep(1)
 
 def OpenMessages():
     driver.switch_to.window(driver.window_handles[2])
-    # print("\n>> Waiting for authentication from Google Messages")
+    print("\n>> Waiting for authentication from Google Messages")
     sleep(2)
     if driver.current_url == "https://messages.google.com/web/authentication":
         toggle = WebDriverWait(driver, 30).until(ec.presence_of_element_located((By.CLASS_NAME, "mat-slide-toggle-thumb")))
