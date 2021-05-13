@@ -81,26 +81,27 @@ def find_vaccines(driver):
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
     wait = WebDriverWait(driver, 20)
     query = "//div[contains(@class, 'mat-main-field') and contains(@class, 'center-main-field')]/mat-selection-list/div[contains(@class, 'ng-star-inserted')]"
-    vaccine_rows = wait.until(ec.presence_of_all_elements_located((By.XPATH, query)))
+    wait.until(ec.presence_of_all_elements_located((By.XPATH, query)))
     all_vaccine_info = []
-    wait.until(ec.presence_of_element_located((By.XPATH, "//h5[@class='center-name-title']")))
-    wait.until(ec.presence_of_element_located((By.XPATH, '//*[@id="main-content"]/app-appointment-table/ion-content/div/div/ion-grid/ion-row/ion-grid/ion-row/ion-col/ion-grid/ion-row/ion-col[2]/form/ion-grid/ion-row/ion-col[6]/div/div/mat-selection-list/div[1]/mat-list-option/div/div[2]/ion-row/ion-col[2]/ul')))
-    wait.until(ec.presence_of_element_located((By.XPATH, "//li")))
+    wait.until(ec.presence_of_all_elements_located((By.XPATH, '//*[@id="main-content"]/app-appointment-table/ion-content/div/div/ion-grid/ion-row/ion-grid/ion-row/ion-col/ion-grid/ion-row/ion-col[2]/form/ion-grid/ion-row/ion-col[6]/div/div/mat-selection-list/div[4]/mat-list-option/div/div[2]/ion-row/ion-col[1]/div/h5')))
+    wait.until(ec.presence_of_all_elements_located((By.XPATH, '//*[@id="main-content"]/app-appointment-table/ion-content/div/div/ion-grid/ion-row/ion-grid/ion-row/ion-col/ion-grid/ion-row/ion-col[2]/form/ion-grid/ion-row/ion-col[6]/div/div/mat-selection-list/div[1]/mat-list-option/div/div[2]/ion-row/ion-col[2]/ul')))
+    wait.until(ec.presence_of_all_elements_located((By.XPATH, "//li")))
     
-    # for i in range(len(vaccine_rows)):
-    #     vaccine_center = driver.find_elements_by_xpath(query)[i]
-    #     vaccine_center_name = vaccine_center.find_elements_by_xpath("//h5[@class='center-name-title']")[i].text
-    #     vaccine_slot_avail_ul = vaccine_center.find_elements_by_xpath("//ul[@class='slot-available-wrap']")[i]
-    #     vaccine_slot_li = vaccine_slot_avail_ul.find_elements_by_tag_name("li")
-    #     vaccine_info_about_slots = []
-    #     for vaccine_slot in vaccine_slot_li:
-    #         vaccine_info_about_slots.append(vaccine_slot.find_element_by_tag_name("a").text)
-
-    #     final_info_grabbed = f"      >>> Vaccine Centre: {vaccine_center_name} -> Info(+7) "
-    #     for vaccine_slot in vaccine_info_about_slots:
-    #         final_info_grabbed += vaccine_slot + " "
-    #     all_vaccine_info.append((vaccine_center_name, vaccine_info_about_slots))
-    #     print(final_info_grabbed)
+    vaccine_rows = driver.find_elements_by_xpath(query)
+    
+    for vaccine_row in vaccine_rows:
+        vaccine_center = vaccine_row
+        vaccine_center_name = vaccine_center.find_element_by_xpath(".//h5[@class='center-name-title']").get_attribute('textContent')
+        vaccine_slot_avail_ul = vaccine_center.find_element_by_xpath(".//ul[@class='slot-available-wrap']")
+        vaccine_info_about_slots = []
+        vaccine_slot_li = vaccine_slot_avail_ul.find_elements_by_tag_name("li")
+        for vaccine_slot in vaccine_slot_li:
+            vaccine_info_about_slots.append(vaccine_slot.find_element_by_tag_name("a").get_attribute('textContent'))
+        final_info_grabbed = f"      >>> Vaccine Centre: {vaccine_center_name} -> Info(+7) "
+        for vaccine_slot in vaccine_info_about_slots:
+            final_info_grabbed += vaccine_slot + " "
+        all_vaccine_info.append((vaccine_center_name, vaccine_info_about_slots))
+        print(final_info_grabbed)
  
 
     return all_vaccine_info
