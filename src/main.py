@@ -8,6 +8,7 @@ from time import sleep, time
 from pathlib import Path
 from playsound import playsound
 import os
+from platform import system
 
 class bcolors:
     HEADER = '\033[95m'
@@ -137,7 +138,13 @@ scriptDirectory = Path().absolute()
 options.add_argument(f"--user-data-dir={scriptDirectory}\\cd")
 # options.add_argument("--profile-directory=Default")
 # options.add_argument(r'--profile-directory="1"')
-driver = webdriver.Chrome(r"./dependencies/chromedriver.exe", options=options)
+if system()=='Windows':
+    ChromeDriverPath = r"./dependencies/chromedriver.exe"
+elif system() == 'Darwin':
+    ChromeDriverPath = r"src/dependencies/chromedriver_mac64" 
+elif system() == 'Linux':
+    ChromeDriverPath = r"src/dependencies/chromedriver_linux"
+driver = webdriver.Chrome(ChromeDriverPath, options=options)
 driver.maximize_window()
 driver.get(r'https://www.cowin.gov.in/')
 driver.execute_script("window.open('" + "https://messages.google.com/web/authentication" + "', '_blank')")
