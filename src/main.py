@@ -83,8 +83,8 @@ def find_vaccines(driver):
     query = "//div[contains(@class, 'mat-main-field') and contains(@class, 'center-main-field')]/mat-selection-list/div[contains(@class, 'ng-star-inserted')]"
     wait.until(ec.presence_of_all_elements_located((By.XPATH, query)))
     all_vaccine_info = []
-    wait.until(ec.presence_of_all_elements_located((By.XPATH, '//*[@id="main-content"]/app-appointment-table/ion-content/div/div/ion-grid/ion-row/ion-grid/ion-row/ion-col/ion-grid/ion-row/ion-col[2]/form/ion-grid/ion-row/ion-col[6]/div/div/mat-selection-list/div[4]/mat-list-option/div/div[2]/ion-row/ion-col[1]/div/h5')))
-    wait.until(ec.presence_of_all_elements_located((By.XPATH, '//*[@id="main-content"]/app-appointment-table/ion-content/div/div/ion-grid/ion-row/ion-grid/ion-row/ion-col/ion-grid/ion-row/ion-col[2]/form/ion-grid/ion-row/ion-col[6]/div/div/mat-selection-list/div[1]/mat-list-option/div/div[2]/ion-row/ion-col[2]/ul')))
+    wait.until(ec.presence_of_all_elements_located((By.XPATH, '//*[@id="main-content"]/app-appointment-table/ion-content/div/div/ion-grid/ion-row/ion-grid/ion-row/ion-col/ion-grid/ion-row/ion-col[2]/form/ion-grid/ion-row[3]/ion-col[3]/div/div/mat-selection-list/div[1]/mat-list-option/div/div[2]/ion-row/ion-col[1]/div/h5')))
+    wait.until(ec.presence_of_all_elements_located((By.XPATH, '//*[@id="main-content"]/app-appointment-table/ion-content/div/div/ion-grid/ion-row/ion-grid/ion-row/ion-col/ion-grid/ion-row/ion-col[2]/form/ion-grid/ion-row[3]/ion-col[3]/div/div/mat-selection-list/div[1]/mat-list-option/div/div[2]/ion-row/ion-col[2]/ul')))
     wait.until(ec.presence_of_all_elements_located((By.XPATH, "//li")))
     
     vaccine_rows = driver.find_elements_by_xpath(query)
@@ -227,7 +227,9 @@ def TryPuttinOTP(OTP):
 
 def SwitchToDistrict():
     sleep(1)
-    driver.find_element_by_class_name(r'status-switch').click()
+    wait = WebDriverWait(driver, 30)
+    wait.until(ec.presence_of_element_located((By.XPATH, "/html/body/app-root/ion-app/ion-router-outlet/app-appointment-table/ion-content/div/div/ion-grid/ion-row/ion-grid/ion-row/ion-col/ion-grid/ion-row/ion-col[2]/form/ion-grid/ion-row[1]/ion-col[2]/div/label/div")))
+    driver.find_element_by_xpath('/html/body/app-root/ion-app/ion-router-outlet/app-appointment-table/ion-content/div/div/ion-grid/ion-row/ion-grid/ion-row/ion-col/ion-grid/ion-row/ion-col[2]/form/ion-grid/ion-row[1]/ion-col[2]/div/label/div').click()
     sleep(1)
 
     return
@@ -263,15 +265,15 @@ while(vaccine_found == False):
     wait.until(ec.presence_of_element_located((By.CLASS_NAME, "btnlist")))
     button_appointment_schedule = driver.find_element_by_class_name("btnlist").find_element_by_xpath("//li/a")
     button_appointment_schedule.click()
-    query_1 = "//ion-button[contains(@class, 'register-btn') and contains(@class, 'schedule-appointment') and contains(@class, 'md') and contains(@class, 'button') and contains(@class, 'button-solid') and contains(@class, 'ion-activatable') and contains(@class, 'ion-focusable') and contains(@class, 'hydrated')]"
-    wait.until(ec.presence_of_element_located((By.XPATH, query_1)))
-    button_appointment_schedule1 = driver.find_element_by_xpath(query_1)
-    button_appointment_schedule1.click()
+    # query_1 = "//ion-button[contains(@class, 'register-btn') and contains(@class, 'schedule-appointment') and contains(@class, 'md') and contains(@class, 'button') and contains(@class, 'button-solid') and contains(@class, 'ion-activatable') and contains(@class, 'ion-focusable') and contains(@class, 'hydrated')]"
+    # wait.until(ec.presence_of_element_located((By.XPATH, query_1)))
+    # button_appointment_schedule1 = driver.find_element_by_xpath(query_1)
+    # button_appointment_schedule1.click()
     SwitchToDistrict()
     select_state(driver)
     sleep(.5)
     select_district(driver)
-    driver.find_elements_by_tag_name("ion-button")[1].click()
+    driver.find_element_by_xpath(r'//*[@id="main-content"]/app-appointment-table/ion-content/div/div/ion-grid/ion-row/ion-grid/ion-row/ion-col/ion-grid/ion-row/ion-col[2]/form/ion-grid/ion-row[1]/ion-col[3]/ion-row/ion-col[3]/ion-button').click()
     wait.until(ec.presence_of_all_elements_located((By.CLASS_NAME, "form-check")))
     sleep(1)
     driver.find_elements_by_class_name("form-check")[0].click()
